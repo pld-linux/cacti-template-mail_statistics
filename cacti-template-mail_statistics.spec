@@ -3,7 +3,7 @@
 Summary:	Postifix monitoring with Cacti
 Name:		cacti-template-%{template}
 Version:	0.1
-Release:	0.4
+Release:	0.5
 License:	GPL v2
 Group:		Applications/WWW
 Source0:	http://forums.cacti.net/download/file.php?id=4091#/postfix_mailserver.tar.gz
@@ -20,6 +20,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		scriptsdir		%{cactidir}/scripts
 %define		snmpdconfdir	/etc/snmp
 %define		_libdir			%{_prefix}/lib
+%define		dbfile			/var/spool/postfix/mailstats.db
+%define		agentscript		%{_libdir}/snmpd-agent-cacti_postfix
 # This is officially registered: http://www.oid-info.com/get/1.3.6.1.4.1.16606
 %define		snmpoid			.1.3.6.1.4.1.16606.2
 
@@ -41,7 +43,10 @@ SNMPd agent to provide Postfix stats for cacti.
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{resourcedir},%{scriptsdir},%{snmpdconfdir},%{_libdir}}
 cp -a *.xml $RPM_BUILD_ROOT%{resourcedir}
-install -p fetch_mail_statistics.pl $RPM_BUILD_ROOT%{_libdir}/snmpd-agent-cacti_postfix
+install -p fetch_mail_statistics.pl $RPM_BUILD_ROOT%{agentscript}
+# ghost the dbfile
+install -d $RPM_BUILD_ROOT$(dirname %{dbfile})
+touch $RPM_BUILD_ROOT%{dbfile}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -51,7 +56,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %post -n net-snmp-agent-cacti_postfix
 if ! grep -qF %{snmpoid} %{snmpdconfdir}/snmpd.local.conf; then
-	echo "extend %{snmpoid} cacti_postfix %{_libdir}/snmpd-agent-cacti_postfix /var/log/maillog /var/log/mailstats.db %{snmpoid}" >> %{snmpdconfdir}/snmpd.local.conf
+	echo "extend %{snmpoid} cacti_postfix %{agentscript} /var/log/maillog %{dbfile} %{snmpoid}" >> %{snmpdconfdir}/snmpd.local.conf
 	%service -q snmpd reload
 fi
 
@@ -69,4 +74,5 @@ fi
 
 %files -n net-snmp-agent-cacti_postfix
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/snmpd-agent-cacti_postfix
+%attr(755,root,root) %{agentscript}
+%ghost %attr(700,root,root) %{dbfile}
