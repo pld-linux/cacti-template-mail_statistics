@@ -1,0 +1,11 @@
+--- cacti-template-postfix-0.1/fetch_mail_statistics.pl	2005-12-19 15:52:35.000000000 +0200
++++ cacti-template-postfix-0.1/fetch_mail_statistics.pl	2010-10-21 17:22:21.000000000 +0300
+@@ -14,7 +14,7 @@
+ #
+ # This defines how many seconds we will cache calculated values.
+ #
+-$MINRESET = 50;
++$MINRESET = 280;
+ 
+ 
+ if ( @ARGV < 5 ) {
