@@ -1,0 +1,10 @@
+--- cacti-template-postfix-0.1/fetch_mail_statistics.pl	2005-12-19 15:52:35.000000000 +0200
++++ cacti-template-postfix-0.1/fetch_mail_statistics.pl	2010-10-21 17:22:21.000000000 +0300
+@@ -81,6 +81,7 @@
+     elsif ( / Blocked INFECTED/ ) { $num_infected++; }
+     elsif ( / Passed BAD-HEADER/ ) { $num_header++; }
+     elsif ( / Blocked BAD-HEADER/ ) { $num_header++; }
++    elsif ( / Passed BANNED/ ) { $num_banned++; }
+     elsif ( / Blocked BANNED/ ) { $num_banned++; }
+   }
+   open( DBFILE, ">".$dbFile ) || die( "Cannot write to db file `".$dbFile."'!" );
