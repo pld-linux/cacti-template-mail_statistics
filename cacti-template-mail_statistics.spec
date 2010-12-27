@@ -60,14 +60,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %post -n net-snmp-agent-mail_statistics
 if ! grep -qF %{snmpoid} %{snmpdconfdir}/snmpd.local.conf; then
-	echo "extend %{snmpoid} cacti_postfix %{agentscript} /var/log/maillog %{dbfile} %{snmpoid}" >> %{snmpdconfdir}/snmpd.local.conf
+	echo "pass %{snmpoid} cacti_postfix %{agentscript} /var/log/maillog %{dbfile} %{snmpoid}" >> %{snmpdconfdir}/snmpd.local.conf
 	%service -q snmpd reload
 fi
 
 %preun -n net-snmp-agent-mail_statistics
 if [ "$1" = 0 ]; then
 	if [ -f %{snmpdconfdir}/snmpd.local.conf ]; then
-		%{__sed} -i -e "/extend %(echo %{snmpoid} | sed -e 's,\.,\\.,g')/d" %{snmpdconfdir}/snmpd.local.conf
+		%{__sed} -i -e "/pass %(echo %{snmpoid} | sed -e 's,\.,\\.,g')/d" %{snmpdconfdir}/snmpd.local.conf
 		%service -q snmpd reload
 	fi
 fi
