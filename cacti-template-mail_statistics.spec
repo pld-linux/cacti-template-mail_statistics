@@ -1,5 +1,4 @@
 %define		template	mail_statistics
-%include	/usr/lib/rpm/macros.perl
 Summary:	Mail logs Graphing with Cacti
 Name:		cacti-template-%{template}
 Version:	0.1
